@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('playlist_comments', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('profile_id')->constrained('profiles');
-            $table->foreignId('playlist_id')->constrained('playlists');
-            $table->string('text',  999);
+            $table->string('text', 999);
+            $table->morphs('commentable');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('playlist_comments');
+        Schema::dropIfExists('comments');
     }
 };

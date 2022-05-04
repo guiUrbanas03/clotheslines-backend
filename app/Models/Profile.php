@@ -28,13 +28,14 @@ class Profile extends Model
         return $this->hasMany(Playlist::class);
     }
 
-    public function playlistComments()
-    {
-        return $this->hasMany(PlaylistComment::class, 'profile_id');
-    }
 
     public function hearts()
     {
         return $this->hasMany(Heart::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

@@ -25,13 +25,13 @@ class Playlist extends Model
         return $this->hasMany(Song::class);
     }
 
-    public function playlistComments()
-    {
-        return $this->hasMany(PlaylistComment::class, 'playlist_id');
-    }
-
     public function hearts()
     {
         return $this->morphMany(Heart::class, 'hearteable');
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }
