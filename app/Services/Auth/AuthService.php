@@ -37,9 +37,9 @@ class AuthService
 
     public function loginWithEmailAndPassword($credentials)
     {
-        $isCredentialsCorrect = Auth::attempt($credentials);
+        $areCredentialsCorrect = Auth::attempt($credentials);
 
-        if (!$isCredentialsCorrect) return false;
+        if (!$areCredentialsCorrect) return false;
 
         $authenticatedUser = Auth::user();
 
