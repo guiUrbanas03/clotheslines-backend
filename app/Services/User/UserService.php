@@ -27,6 +27,7 @@ class UserService
     public function createUser($userDTO, $profileDTO)
     {
         $user = User::create($userDTO);
+
         $this->profileService->createProfile($profileDTO);
 
         return $user;
@@ -35,7 +36,9 @@ class UserService
     public function updateUser($userId, $userDTO, $profileDTO)
     {
         $user = User::findOrFail($userId);
+
         $user->update($userDTO);
+
         $this->profileService->updateProfile($user->profile->id, $profileDTO);
 
         return $user;

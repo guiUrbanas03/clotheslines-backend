@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\User\UserController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\v1\Auth\AuthController;
+use App\Http\Controllers\Api\v1\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,14 +15,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('guest')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+        Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+    });
 });
 
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index'])->name('users.index');
-    Route::get('/{user_id}', [UserController::class, 'find'])->name('users.find');
-    Route::post('/store', [UserController::class, 'store'])->name('users.store');
-    Route::put('/{user_id}/update', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/{user_id}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::get('/me', [AuthController::class, 'me'])->name('auth.me');
+        Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('users.index');
+        Route::get('/{user_id}', [UserController::class, 'find'])->name('users.find');
+        Route::put('/{user_id}/update', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/{user_id}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
+    });
 });

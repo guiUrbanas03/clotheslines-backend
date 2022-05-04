@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\ApiAuth;
+use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
 class Authenticate extends Middleware
@@ -14,8 +16,25 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
-        if (! $request->expectsJson()) {
-            return route('login');
+        if (!$request->expectsJson()) {
+            // return route('login');
+
+            return response()->json([
+                'messaage' => 'unauthenticated user'
+            ]);
         }
+    }
+
+    public function handle($request, Closure $next, ...$guards)
+    {
+        $jwt = $request->cookie(ApiAuth::API_AUTH_COOKIE_NAME);
+
+        if ($jwt) {
+            $request->headers->set('Authorization', 'Bearer ' . $jwt);
+        }
+
+        $this->authenticate($request, $guards);
+
+        return $next($request);
     }
 }
