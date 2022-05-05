@@ -14,6 +14,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        switch (strtolower(config('app.env'))) {
+            case 'local':
+                $this->call([
+                    CustomUserWithProfileSeeder::class,
+                    UserSeeder::class,
+                    ProfileSeeder::class,
+                ]);
+            case 'homolog':
+                $this->call([
+                    CustomUserWithProfileSeeder::class,
+                    UserSeeder::class,
+                    ProfileSeeder::class,
+                ]);
+            case 'production':
+                $this->call([
+                    CustomUserWithProfileSeeder::class,
+                    UserSeeder::class,
+                    ProfileSeeder::class,
+                ]);
+        }
     }
 }
