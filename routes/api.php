@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');
         Route::get('/{user_id}', [UserController::class, 'find'])->name('users.find');
         Route::put('/{user_id}/update', [UserController::class, 'update'])->name('users.update');
+        Route::put('/{user_id}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::delete('/{user_id}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
     });
 });

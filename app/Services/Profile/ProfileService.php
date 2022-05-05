@@ -25,7 +25,9 @@ class ProfileService
     {
         $profile = Profile::find($profileId);
 
-        return $profile->update($profileDTO);
+        $profile->update($profileDTO);
+
+        return $profile;
     }
 
     public function deleteProfile($profileId)
@@ -33,5 +35,14 @@ class ProfileService
         $profile = Profile::find($profileId);
 
         return $profile->delete();
+    }
+
+    public function restoreProfile($profileId)
+    {
+        $profile = Profile::withTrashed()->findOrFail($profileId);
+
+        $profile->restore();
+
+        return $profile;
     }
 }

@@ -50,6 +50,20 @@ class UserService
 
         $user->delete();
 
+        // Insert observer to following functionality
+        $this->profileService->deleteProfile($user->profile->id);
+
+        return $user;
+    }
+
+    public function restoreUser($userId)
+    {
+        $user = User::withTrashed()->findOrFail($userId);
+
+        $user->restore();
+
+        $this->profileService->restoreProfile($user->profile->id);
+
         return $user;
     }
 }
