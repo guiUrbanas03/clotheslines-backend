@@ -16,16 +16,22 @@ class ProfileService
         return Profile::find($profile_id);
     }
 
-    public function createProfile($profileDTO)
+    public function createProfile($userId, $profileData)
     {
-        return Profile::create($profileDTO);
+        return Profile::create([
+            'user_id' => $userId,
+            'nickname' => $profileData['nickname'],
+            'first_name' => $profileData['first_name'],
+            'last_name' => $profileData['last_name'],
+            'country' => $profileData['country'],
+        ]);
     }
 
-    public function updateProfile($profileId, $profileDTO)
+    public function updateProfile($profileId, $profileData)
     {
         $profile = Profile::find($profileId);
 
-        $profile->update($profileDTO);
+        $profile->update($profileData);
 
         return $profile;
     }
