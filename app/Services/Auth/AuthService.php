@@ -21,9 +21,9 @@ class AuthService
         $this->userService = $userService;
     }
 
-    public function registerUser($userDTO, $profileDTO)
+    public function registerUser($userData, $profileData)
     {
-        $user = $this->userService->createUser($userDTO, $profileDTO);
+        $user = $this->userService->createUser($userData, $profileData);
 
         if (!$user) return false;
 

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\v1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\v1\Auth\LoginRequest;
+use App\Http\Requests\Api\v1\Auth\RegisterUserRequest;
+use App\Http\Resources\User\UserResource;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -18,51 +20,23 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request)
     {
         $userDTO = $request->get('user');
         $profileDTO = $request->get('profile');
 
-        $validator = Validator::make($request->only('user', 'profile'), [
-            'user.email' => ['required', Rule::unique('users', 'email'), 'email', 'max:320'],
-            'user.password' => ['required', 'string', 'max:999', 'min:8', 'confirmed'],
-            'user.password_confirmation' => ['required', 'string', 'max:999', 'min:8'],
-            'profile.nickname' => ['required', Rule::unique('profiles', 'nickname'), 'string', 'max:20'],
-            'profile.first_name' => ['required', 'string', 'max:100'],
-            'profile.last_name' => ['required', 'string', 'max: 100'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'error while registering user',
-                'errors' => $validator->getMessageBag()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         $registeredUser = $this->authService->registerUser($userDTO, $profileDTO);
 
-        return $this->sendAuthUserResponse($registeredUser);
+        return $this->sendAuthenticatedUserResponse($registeredUser);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
 
-        $validator = Validator::make($credentials, [
-            'email' => ['required', 'email', 'max:320'],
-            'password' => ['required', 'string', 'max:999', 'min:8']
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'error while logging user',
-                'errors' => $validator->getMessageBag()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         $userCredentials = $this->authService->loginWithEmailAndPassword($credentials);
 
-        return $this->sendAuthUserResponse($userCredentials);
+        return $this->sendAuthenticatedUserResponse($userCredentials);
     }
 
     public function logout()
@@ -70,16 +44,16 @@ class AuthController extends Controller
         $cookie = $this->authService->logout();
 
         return response([
-            'message' => 'Success',
+            'message' => 'User logged out',
         ])->withCookie($cookie);
     }
 
     public function me()
     {
-        return $this->authService->me();
+        return new UserResource($this->authService->me());
     }
 
-    private function sendAuthUserResponse($userCredentials)
+    private function sendAuthenticatedUserResponse($userCredentials)
     {
         if (!$userCredentials) {
             return response()->json([

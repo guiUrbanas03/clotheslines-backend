@@ -4,6 +4,7 @@ namespace App\Services\User;
 
 use App\Models\User;
 use App\Services\Profile\ProfileService;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -24,22 +25,28 @@ class UserService
         return User::findOrFail($userId);
     }
 
-    public function createUser($userDTO, $profileDTO)
+    public function createUser($userData, $profileData)
     {
-        $user = User::create($userDTO);
+        $user = User::create([
+            'email' => $userData['email'],
+            'password' => Hash::make($userData['password']),
+            'status' => $userData['status'],
+            'role' => $userData['role'],
+        ]);
 
-        $this->profileService->createProfile($profileDTO);
+        $this->profileService->createProfile($user->id, $profileData);
 
         return $user;
     }
 
-    public function updateUser($userId, $userDTO, $profileDTO)
+
+    public function updateUser($userId, $userData, $profileData)
     {
         $user = User::findOrFail($userId);
 
-        $user->update($userDTO);
+        $user->update($userData);
 
-        $this->profileService->updateProfile($user->profile->id, $profileDTO);
+        $this->profileService->updateProfile($user->profile->id, $profileData);
 
         return $user;
     }
@@ -50,7 +57,6 @@ class UserService
 
         $user->delete();
 
-        // Insert observer to following functionality
         $this->profileService->deleteProfile($user->profile->id);
 
         return $user;
@@ -59,10 +65,11 @@ class UserService
     public function restoreUser($userId)
     {
         $user = User::withTrashed()->findOrFail($userId);
+        $profileId = $user->profile()->withTrashed()->pluck('id')->first();
 
         $user->restore();
 
-        $this->profileService->restoreProfile($user->profile->id);
+        $this->profileService->restoreProfile($profileId);
 
         return $user;
     }
