@@ -22,10 +22,7 @@ services:
         networks:
             - sail
         depends_on:
-            - mysql
-            - redis
-            - meilisearch
-            - selenium
+            - pgsql
     pgsql:
         image: postgres:13
         ports:
