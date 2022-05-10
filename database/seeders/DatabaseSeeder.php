@@ -21,18 +21,23 @@ class DatabaseSeeder extends Seeder
                     UserSeeder::class,
                     ProfileSeeder::class,
                 ]);
+                break;
+
             case 'homolog':
                 $this->call([
                     CustomUserWithProfileSeeder::class,
                     UserSeeder::class,
                     ProfileSeeder::class,
                 ]);
+                break;
+
             case 'production':
                 $this->call([
                     CustomUserWithProfileSeeder::class,
                     UserSeeder::class,
                     ProfileSeeder::class,
                 ]);
+                break;
         }
     }
 }
