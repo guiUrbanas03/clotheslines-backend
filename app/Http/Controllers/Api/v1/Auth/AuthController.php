@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Api\v1\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\v1\Auth\LoginRequest;
 use App\Http\Requests\Api\v1\Auth\RegisterUserRequest;
-use App\Http\Resources\User\UserResource;
 use App\Services\Auth\AuthService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -27,7 +24,11 @@ class AuthController extends Controller
 
         $registeredUser = $this->authService->registerUser($userDTO, $profileDTO);
 
-        return $this->sendAuthenticatedUserResponse($registeredUser);
+        return $this->sendAuthenticatedUserResponse(
+            $registeredUser,
+            'User registered successfully',
+            'Failed to register user',
+        );
     }
 
     public function login(LoginRequest $request)
@@ -36,34 +37,43 @@ class AuthController extends Controller
 
         $userCredentials = $this->authService->loginWithEmailAndPassword($credentials);
 
-        return $this->sendAuthenticatedUserResponse($userCredentials);
+        return $this->sendAuthenticatedUserResponse(
+            $userCredentials,
+            'User authenticated successfully',
+            'Invalid credentials'
+        );
     }
 
     public function logout()
     {
         $cookie = $this->authService->logout();
 
-        return response([
-            'message' => 'User logged out',
+        return $this->jsonResponse([
+            'message' => 'User logged out successfully',
         ])->withCookie($cookie);
     }
 
     public function me()
     {
-        return new UserResource($this->authService->me());
+        $authenticatedUser = $this->authService->me()->resource;
+
+        return $this->jsonResponse([
+            'message' => 'Authenticated user found succesfully',
+            'user' => $authenticatedUser
+        ]);
     }
 
-    private function sendAuthenticatedUserResponse($userCredentials)
+    private function sendAuthenticatedUserResponse($userCredentials, $successResponseMessage = '', $failResponseMessage = '')
     {
         if (!$userCredentials) {
-            return response()->json([
-                'message' => 'Invalid credentials'
+            return $this->jsonResponse([
+                'message' => $failResponseMessage
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        return response()->json([
-            'message' => 'User authenticated',
-            'user' => $userCredentials['user']
+        return $this->jsonResponse([
+            'message' => $successResponseMessage,
+            'user' => $userCredentials['user']->resource
         ], Response::HTTP_OK)->withCookie($userCredentials['cookie']);
     }
 }

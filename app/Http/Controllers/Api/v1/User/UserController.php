@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\v1\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\v1\User\UpdateUserRequest;
 use App\Http\Resources\User\UserResource;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
@@ -18,17 +20,25 @@ class UserController extends Controller
 
     public function index()
     {
-        return UserResource::collection($this->userService->getAllUsers());
+        $users = UserResource::collection($this->userService->getAllUsers());
+
+        return $this->jsonResponse([
+            'message' => 'Users found successfully',
+            'users' => $users
+        ], Response::HTTP_OK);
     }
 
     public function find(Request $request)
     {
         $userId = $request->user_id;
 
-        return new UserResource($this->userService->getUser($userId));
+        return $this->jsonResponse([
+            'message' => 'User found successfully',
+            'user' => $this->userService->getUser($userId)->resource
+        ]);
     }
 
-    public function update(Request $request)
+    public function update(UpdateUserRequest $request)
     {
         $userId = $request->user_id;
         $userDTO = $request->user;
@@ -36,7 +46,10 @@ class UserController extends Controller
 
         $updatedUser = $this->userService->updateUser($userId, $userDTO, $profileDTO);
 
-        return new UserResource($updatedUser);
+        return $this->jsonResponse([
+            'message' => 'User updated successfully',
+            'user' => $updatedUser->resource
+        ]);
     }
 
     public function destroy(Request $request)
@@ -45,7 +58,10 @@ class UserController extends Controller
 
         $deletedUser = $this->userService->deleteUser($userId);
 
-        return new UserResource($deletedUser);
+        return $this->jsonResponse([
+            'message' => 'User deleted successfully',
+            'user' => $deletedUser->resource
+        ]);
     }
 
     public function restore(Request $request)
@@ -54,6 +70,9 @@ class UserController extends Controller
 
         $restoredUser =  $this->userService->restoreUser($userId);
 
-        return new UserResource($restoredUser);
+        return $this->jsonResponse([
+            'message' => 'User restored successfully',
+            'user' => $restoredUser->resource
+        ]);
     }
 }
