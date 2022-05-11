@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 
 class RegisterUserRequest extends ApiFormRequest
 {
-    protected $errorMessage = 'error while registering user';
+    protected $errorMessage = 'Failed to register user';
 
     /**
      * Determine if the user is authorized to make this request.
