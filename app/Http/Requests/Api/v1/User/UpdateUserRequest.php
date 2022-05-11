@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends ApiFormRequest
 {
-    protected $errorMessage = 'error while updating user';
+    protected $errorMessage = 'failed to update user';
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -52,7 +52,7 @@ class UpdateUserRequest extends ApiFormRequest
 
     private function getUserModelByRequestUserId()
     {
-        $userId = $this->request->get('user_id');
+        $userId = $this->user_id;
 
         return User::findOrFail($userId);
     }
