@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\User\UserResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -47,5 +48,10 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function getResourceAttribute()
+    {
+        return new UserResource($this);
     }
 }
