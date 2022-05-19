@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\v1\Auth\LoginRequest;
 use App\Http\Requests\Api\v1\Auth\RegisterUserRequest;
+use App\Models\User;
 use App\Services\Auth\AuthService;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,10 +36,16 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        $userCredentials = $this->authService->loginWithEmailAndPassword($credentials);
+        $loggedUser = $this->authService->loginWithEmailAndPassword($credentials);
+
+        if (!$loggedUser) {
+            return false;
+        }
+
+        $request->session()->regenerate();
 
         return $this->sendAuthenticatedUserResponse(
-            $userCredentials,
+            $loggedUser,
             'User authenticated successfully',
             'Invalid credentials'
         );
@@ -46,11 +53,11 @@ class AuthController extends Controller
 
     public function logout()
     {
-        $cookie = $this->authService->logout();
+        $this->authService->logout();
 
         return $this->jsonResponse([
             'message' => 'User logged out successfully',
-        ])->withCookie($cookie);
+        ]);
     }
 
     public function me()
@@ -63,9 +70,9 @@ class AuthController extends Controller
         ]);
     }
 
-    private function sendAuthenticatedUserResponse($userCredentials, $successResponseMessage = '', $failResponseMessage = '')
+    private function sendAuthenticatedUserResponse(User $user, $successResponseMessage = '', $failResponseMessage = '')
     {
-        if (!$userCredentials) {
+        if (!$user) {
             return $this->jsonResponse([
                 'message' => $failResponseMessage
             ], Response::HTTP_UNAUTHORIZED);
@@ -73,7 +80,7 @@ class AuthController extends Controller
 
         return $this->jsonResponse([
             'message' => $successResponseMessage,
-            'user' => $userCredentials['user']->resource
-        ], Response::HTTP_OK)->withCookie($userCredentials['cookie']);
+            'user' => $user->resource,
+        ], Response::HTTP_OK);
     }
 }
