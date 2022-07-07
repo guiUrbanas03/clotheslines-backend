@@ -49,6 +49,7 @@ class RegisterUserRequest extends ApiFormRequest
             'profile.nickname' => ['required', Rule::unique('profiles', 'nickname'), 'string', 'max:20'],
             'profile.first_name' => ['required', 'string', 'max:100'],
             'profile.last_name' => ['required', 'string', 'max: 100'],
+            'profile.country' => ['required', 'string', 'max:320']
         ];
     }
 }
