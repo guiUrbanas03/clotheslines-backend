@@ -7,6 +7,8 @@ use App\Http\Requests\Api\v1\Auth\LoginRequest;
 use App\Http\Requests\Api\v1\Auth\RegisterUserRequest;
 use App\Models\User;
 use App\Services\Auth\AuthService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -34,15 +36,14 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
+
         $credentials = $request->only('email', 'password');
 
-        $loggedUser = $this->authService->loginWithEmailAndPassword($credentials);
+        $loggedUser = $this->authService->authenticateUser($credentials);
 
-        if (!$loggedUser) {
-            return false;
+        if ($loggedUser) {
+            $request->session()->regenerate();
         }
-
-        $request->session()->regenerate();
 
         return $this->sendAuthenticatedUserResponse(
             $loggedUser,
@@ -51,9 +52,13 @@ class AuthController extends Controller
         );
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        $this->authService->logout();
+        $request->session()->invalidate();
+
+        $request->session()->flush();
+
+        $request->session()->regenerateToken();
 
         return $this->jsonResponse([
             'message' => 'User logged out successfully',
@@ -70,11 +75,15 @@ class AuthController extends Controller
         ]);
     }
 
-    private function sendAuthenticatedUserResponse(User $user, $successResponseMessage = '', $failResponseMessage = '')
+    private function sendAuthenticatedUserResponse($user, $successResponseMessage = '', $failResponseMessage = '')
     {
-        if (!$user) {
+        if (!$user || $user == null) {
             return $this->jsonResponse([
-                'message' => $failResponseMessage
+                'message' => $failResponseMessage,
+                'errors' => [
+                    'auth' => $failResponseMessage,
+                ]
+
             ], Response::HTTP_UNAUTHORIZED);
         }
 
