@@ -2,12 +2,8 @@
 
 namespace App\Services\Auth;
 
-use App\Enums\ApiAuth;
-use App\Models\User;
 use App\Services\User\UserService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
@@ -27,7 +23,7 @@ class AuthService
         return $user;
     }
 
-    public function loginWithEmailAndPassword($credentials)
+    public function authenticateUser($credentials)
     {
         $areCredentialsCorrect = Auth::attempt($credentials);
 
@@ -38,11 +34,6 @@ class AuthService
         $authenticatedUser = Auth::user();
 
         return $authenticatedUser;
-    }
-
-    public function logout()
-    {
-        Auth::logout();
     }
 
     public function me()
