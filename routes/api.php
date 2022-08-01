@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\v1\Auth\AuthController;
+use App\Http\Controllers\Api\v1\Playlist\PlaylistController;
+use App\Http\Controllers\Api\v1\Song\SongController;
 use App\Http\Controllers\Api\v1\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,4 +37,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{user_id}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::delete('/{user_id}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
     });
+});
+
+Route::prefix('playlists')->group(function () {
+    Route::get('/', [PlaylistController::class, 'index'])->name('playlists.index');
+    Route::get('/{playlist_id}', [PlaylistController::class, 'find'])->name('playlists.find');
+    Route::get('/{playlist_id}/songs', [PlaylistController::class, 'getSongs'])->name('playlists.songs');
+    Route::post('/', [PlaylistController::class, 'store'])->name('playlists.store');
+    Route::post('/{playlist_id}/songs', [PlaylistController::class, 'storeManySongs'])->name('playlists.songs.store');
+    Route::put('/{playlist_id}/update', [PlaylistController::class, 'update'])->name('playlists.update');
+    Route::delete('/{playlist_id}/destroy', [PlaylistController::class, 'destroy'])->name('playlists.destroy');
+});
+
+Route::prefix('songs')->group(function () {
+    Route::get('/', [SongController::class, 'index'])->name('songs.index');
+    Route::get('/{song_id}', [SongController::class, 'find'])->name('songs.find');
+    Route::post('/', [SongController::class, 'store'])->name('songs.store');
+    Route::put('/{song_id}/update', [SongController::class, 'update'])->name('songs.update');
+    Route::delete('/{song_id}/destroy', [SongController::class, 'destroy'])->name('songs.destroy');
 });
