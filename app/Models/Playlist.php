@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Playlist\PlaylistResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -33,5 +34,10 @@ class Playlist extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function getResourceAttribute()
+    {
+        return new PlaylistResource($this);
     }
 }
