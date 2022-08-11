@@ -26,10 +26,27 @@ class CreatePlaylistRequest extends FormRequest
     public function rules()
     {
         return [
-            'playlist' => 'required',
-            'playlist.profile_id' => ['required'],
+            ...$this->playlistRules(),
+            ...$this->songsRules()
+        ];
+    }
+
+    private function playlistRules()
+    {
+        return [
+            'playlist' => ['required', 'array'],
             'playlist.title' => ['required', 'string', 'min:1', 'max:50'],
             'playlist.description' => ['nullable', 'string', 'min:1', 'max:255'],
+        ];
+    }
+
+    private function songsRules()
+    {
+        return [
+            'songs' => ['required', 'array', 'min:1', 'max:5'],
+            'songs.*.name' => ['required', 'string', 'min:1', 'max:255'],
+            'songs.*.artist' => ['required', 'string', 'min:1', 'max:255'],
+            'songs.*.album' => ['nullable', 'string', 'min:1', 'max:255'],
         ];
     }
 }
