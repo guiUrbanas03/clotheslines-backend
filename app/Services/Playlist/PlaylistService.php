@@ -3,6 +3,7 @@
 namespace App\Services\Playlist;
 
 use App\Models\Playlist;
+use Illuminate\Support\Facades\Auth;
 
 class PlaylistService
 {
@@ -20,7 +21,13 @@ class PlaylistService
 
     public  function createPlaylist($playlistData)
     {
-        $playlist = Playlist::create($playlistData);
+        $profileId = Auth::user()->profile->id;
+
+        $playlist = Playlist::create([
+            'profile_id' => $profileId,
+            'title' => $playlistData['title'],
+            'description' => $playlistData['description']
+        ]);
 
         return $playlist;
     }
