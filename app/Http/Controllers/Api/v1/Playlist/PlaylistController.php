@@ -10,6 +10,7 @@ use App\Http\Resources\Playlist\PlaylistResource;
 use App\Http\Resources\Song\SongResource;
 use App\Services\Playlist\PlaylistService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlaylistController extends Controller
 {
@@ -42,14 +43,28 @@ class PlaylistController extends Controller
 
     public function store(CreatePlaylistRequest $request)
     {
-        $playlistDTO = $request->get('playlist');
+        try {
+            DB::beginTransaction();
 
-        $playlist = $this->playlistService->createPlaylist($playlistDTO);
+            $playlistDTO = $request->get('playlist');
+            $songs = $request->get('songs');
 
-        return $this->jsonResponse([
-            'message' => 'Playlist created successfully',
-            'playlist' => $playlist->resource
-        ]);
+            $playlist = $this->playlistService->createPlaylist($playlistDTO);
+
+            $this->playlistService->addSongsToPlaylist($playlist->id, $songs);
+
+            DB::commit();
+
+            return $this->jsonResponse([
+                'message' => 'Playlist created successfully',
+                'playlist' => $playlist->resource
+            ]);
+        } catch (\Exception $error) {
+            DB::rollBack();
+            return $this->jsonResponse([
+                'message' => $error->getMessage()
+            ], 500);
+        }
     }
 
     public function update(UpdatePlaylistRequest $request)
