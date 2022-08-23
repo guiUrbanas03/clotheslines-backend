@@ -41,10 +41,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('playlists')->group(function () {
         Route::get('/{playlist_id}', [PlaylistController::class, 'find'])->name('playlists.find');
         Route::get('/{playlist_id}/songs', [PlaylistController::class, 'getSongs'])->name('playlists.songs');
+        Route::get('profile/hearts', [PlaylistController::class, 'getPlaylistsHearts'])->name('playlists.hearts');
         Route::post('/', [PlaylistController::class, 'store'])->name('playlists.store');
         Route::post('/{playlist_id}/songs', [PlaylistController::class, 'storeManySongs'])->name('playlists.songs.store');
+        Route::post('/{playlist_id}/heart', [PlaylistController::class, 'storeHeart'])->name('playlists.heart');
         Route::put('/{playlist_id}/update', [PlaylistController::class, 'update'])->name('playlists.update');
         Route::delete('/{playlist_id}/destroy', [PlaylistController::class, 'destroy'])->name('playlists.destroy');
+        Route::delete('/{playlist_id}/heart', [PlaylistController::class, 'destroyHeart'])->name('playlists.destroy-heart');
     });
 
     Route::prefix('songs')->group(function () {
@@ -58,4 +61,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::prefix('playlists')->group(function () {
     Route::get('/', [PlaylistController::class, 'index'])->name('playlists.index');
+    Route::get('/{playlist_id}/owner', [PlaylistController::class, 'getPlaylistOwnerUser'])->name('playlists.owner');
+    Route::get('/{playlist_id}/hearts/count', [PlaylistController::class, 'getHeartsCount'])->name('playlists.hearts-count');
 });

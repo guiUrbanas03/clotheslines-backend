@@ -9,7 +9,7 @@ class PlaylistService
 {
     public function getAllPlaylists()
     {
-        return Playlist::orderBy('created_at', 'DESC')
+        return Playlist::withCount('hearts')->orderBy('created_at', 'DESC')
             ->orderBy('id')
             ->cursorPaginate(3);
     }
@@ -64,5 +64,32 @@ class PlaylistService
         $playlist->songs()->createMany($songs);
 
         return $playlist;
+    }
+
+    public function getOwnerUser($playlistId)
+    {
+        $playlist = Playlist::findOrFail($playlistId);
+
+        return $playlist->profile->user;
+    }
+
+    public function heart($playlistId)
+    {
+        $profileId = Auth::user()->profile->id;
+
+        $playlist = Playlist::findOrFail($playlistId);
+
+        $heart = $playlist->hearts()->create([
+            'profile_id' => $profileId,
+        ]);
+
+        return $heart;
+    }
+
+    public function unheart($playlistId)
+    {
+        $profile = Auth::user()->profile;
+
+        $profile->playlistsHearts->firstWhere('hearteable_id', $playlistId)->delete();
     }
 }

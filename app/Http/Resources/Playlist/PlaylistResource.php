@@ -23,6 +23,7 @@ class PlaylistResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'songs' => $this->songs,
+            'hearts_count' => $this->hearts_count,
         ];
     }
 }

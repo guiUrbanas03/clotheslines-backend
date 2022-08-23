@@ -28,7 +28,6 @@ class Profile extends Model
         return $this->hasMany(Playlist::class);
     }
 
-
     public function hearts()
     {
         return $this->hasMany(Heart::class);
@@ -37,5 +36,10 @@ class Profile extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function getPlaylistsHeartsAttribute()
+    {
+        return $this->hearts()->where('hearteable_type', Playlist::class);
     }
 }

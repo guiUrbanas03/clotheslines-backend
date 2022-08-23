@@ -8,8 +8,10 @@ use App\Http\Requests\Api\v1\Playlist\CreatePlaylistRequest;
 use App\Http\Requests\Api\v1\Playlist\UpdatePlaylistRequest;
 use App\Http\Resources\Playlist\PlaylistResource;
 use App\Http\Resources\Song\SongResource;
+use App\Models\Playlist;
 use App\Services\Playlist\PlaylistService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PlaylistController extends Controller
@@ -114,6 +116,63 @@ class PlaylistController extends Controller
         return $this->jsonResponse([
             'message' => 'Songs created successfully',
             'songs' => SongResource::collection($playlist->songs)
+        ]);
+    }
+
+    public function getPlaylistOwnerUser(Request $request)
+    {
+        $playlistId = $request->playlist_id;
+
+        $playlistOwnerUser = $this->playlistService->getOwnerUser($playlistId);
+
+        return $this->jsonResponse([
+            'message' => 'Playlist owner found successfully',
+            'user' => $playlistOwnerUser->resource
+        ]);
+    }
+
+    public function storeHeart(Request $request)
+    {
+        $playlistId = $request->playlist_id;
+
+        $heart = $this->playlistService->heart($playlistId);
+
+        return $this->jsonResponse([
+            'message' => 'Playlist heart created successfully',
+            'heart' => $heart
+        ]);
+    }
+
+    public function destroyHeart(Request $request)
+    {
+        $playlistId = $request->playlist_id;
+
+        $this->playlistService->unheart($playlistId);
+
+        return $this->jsonResponse([
+            'message' => 'Playlist heart deleted successfully',
+        ]);
+    }
+
+    public function getPlaylistsHearts()
+    {
+        $profile = Auth::user()->profile;
+
+        return $this->jsonResponse([
+            'message' => 'Hearts found successfully',
+            'hearts' => $profile->playlistsHearts->pluck('hearteable_id'),
+        ]);
+    }
+
+    public function getHeartsCount(Request $request)
+    {
+        $playlistId = $request->playlist_id;
+
+        $playlist = Playlist::withCount('hearts')->find($playlistId);
+
+        return $this->jsonResponse([
+            'message' => 'Hearts found successfully',
+            'hearts' => $playlist->hearts_count
         ]);
     }
 }
