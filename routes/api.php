@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\v1\Auth\AuthController;
+use App\Http\Controllers\Api\v1\Comment\CommentController;
 use App\Http\Controllers\Api\v1\Playlist\PlaylistController;
 use App\Http\Controllers\Api\v1\Song\SongController;
 use App\Http\Controllers\Api\v1\User\UserController;
@@ -57,10 +58,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{song_id}/update', [SongController::class, 'update'])->name('songs.update');
         Route::delete('/{song_id}/destroy', [SongController::class, 'destroy'])->name('songs.destroy');
     });
+
+    Route::prefix('comments')->group(function () {
+        Route::post('/{playlist_id}', [CommentController::class, 'storeComment'])->name('playlists.comment');
+    });
 });
 
 Route::prefix('playlists')->group(function () {
     Route::get('/', [PlaylistController::class, 'index'])->name('playlists.index');
     Route::get('/{playlist_id}/owner', [PlaylistController::class, 'getPlaylistOwnerUser'])->name('playlists.owner');
     Route::get('/{playlist_id}/hearts/count', [PlaylistController::class, 'getHeartsCount'])->name('playlists.hearts-count');
+});
+
+Route::prefix('comments')->group(function () {
+    Route::get('/{playlist_id}', [CommentController::class, 'getPlaylistComments'])->name('playlists.comments');
 });
