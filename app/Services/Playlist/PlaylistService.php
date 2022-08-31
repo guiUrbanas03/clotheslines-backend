@@ -9,7 +9,8 @@ class PlaylistService
 {
     public function getAllPlaylists()
     {
-        return Playlist::withCount('hearts')->orderBy('created_at', 'DESC')
+        return Playlist::withCount('hearts')
+            ->orderBy('created_at', 'DESC')
             ->orderBy('id')
             ->cursorPaginate(3);
     }
