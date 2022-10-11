@@ -25,6 +25,11 @@ class Comment extends Model
         return $this->belongsTo(Profile::class);
     }
 
+    public function hearts()
+    {
+        return $this->morphMany(Heart::class, 'hearteable');
+    }
+
     public function getResourceAttribute()
     {
         return new CommentResource($this);

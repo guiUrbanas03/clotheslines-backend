@@ -27,7 +27,7 @@ class CommentService
     {
         $playlist = Playlist::findOrFail($playlistId);
 
-        $comments = $playlist->comments;
+        $comments = $playlist->comments()->withCount('hearts')->get();
 
         return $comments;
     }

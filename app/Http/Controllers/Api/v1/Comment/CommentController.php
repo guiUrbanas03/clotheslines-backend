@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api\v1\Comment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Comment\CommentResource;
-use App\Models\Playlist;
+use App\Models\Comment;
 use App\Services\Comment\CommentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -40,6 +39,18 @@ class CommentController extends Controller
         return $this->jsonResponse([
             'message' => 'Comments found successfully',
             'comments' => CommentResource::collection($comments)
+        ]);
+    }
+
+    public function getHeartsCount(Request $request)
+    {
+        $commentId = $request->comment_id;
+
+        $comment = Comment::withCount('hearts')->find($commentId);
+
+        return $this->jsonResponse([
+            'message' => 'Hearts found successfully',
+            'hearts' => $comment->hearts_count
         ]);
     }
 }

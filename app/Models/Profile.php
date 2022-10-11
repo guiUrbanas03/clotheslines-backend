@@ -42,4 +42,9 @@ class Profile extends Model
     {
         return $this->hearts()->where('hearteable_type', Playlist::class);
     }
+
+    public function getCommentsHeartsAttribute()
+    {
+        return $this->hearts()->where('hearteable_type', Comment::class);
+    }
 }

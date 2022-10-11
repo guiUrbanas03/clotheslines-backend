@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\v1\Auth\AuthController;
 use App\Http\Controllers\Api\v1\Comment\CommentController;
+use App\Http\Controllers\Api\v1\Heart\HeartController;
 use App\Http\Controllers\Api\v1\Playlist\PlaylistController;
 use App\Http\Controllers\Api\v1\Song\SongController;
 use App\Http\Controllers\Api\v1\User\UserController;
@@ -60,7 +61,16 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('comments')->group(function () {
+        Route::get('profile/hearts', [CommentController::class, 'getPlaylistsHearts'])->name('comments.hearts');
         Route::post('/{playlist_id}', [CommentController::class, 'storeComment'])->name('playlists.comment');
+        Route::post('/{comment_id}/heart', [CommentController::class, 'storeHeart'])->name('comments.heart');
+        Route::delete('/{comment_id}/heart', [CommentController::class, 'destroyHeart'])->name('comments.destroy-heart');
+    });
+
+    Route::prefix('hearts')->group(function () {
+        Route::get('/{hearteable_type}/profile', [HeartController::class, 'getProfileHeartedIds'])->name('hearts.hearteable-ids');
+        Route::post('/{hearteable_id}/{hearteable_type}/store', [HeartController::class, 'store'])->name('hearts.store');
+        Route::delete('/{hearteable_id}/{hearteable_type}/destroy', [HeartController::class, 'destroy'])->name('hearts.destroy');
     });
 });
 
@@ -72,4 +82,8 @@ Route::prefix('playlists')->group(function () {
 
 Route::prefix('comments')->group(function () {
     Route::get('/{playlist_id}', [CommentController::class, 'getPlaylistComments'])->name('playlists.comments');
+});
+
+Route::prefix('hearts')->group(function () {
+    Route::get('/{hearteable_id}/{hearteable_type}/count', [HeartController::class, 'getHeartsCount'])->name('hearts.count');
 });

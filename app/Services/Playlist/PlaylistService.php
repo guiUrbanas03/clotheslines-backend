@@ -73,24 +73,4 @@ class PlaylistService
 
         return $playlist->profile->user;
     }
-
-    public function heart($playlistId)
-    {
-        $profileId = Auth::user()->profile->id;
-
-        $playlist = Playlist::findOrFail($playlistId);
-
-        $heart = $playlist->hearts()->create([
-            'profile_id' => $profileId,
-        ]);
-
-        return $heart;
-    }
-
-    public function unheart($playlistId)
-    {
-        $profile = Auth::user()->profile;
-
-        $profile->playlistsHearts->firstWhere('hearteable_id', $playlistId)->delete();
-    }
 }

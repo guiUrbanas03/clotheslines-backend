@@ -11,7 +11,6 @@ use App\Http\Resources\Song\SongResource;
 use App\Models\Playlist;
 use App\Services\Playlist\PlaylistService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PlaylistController extends Controller
@@ -128,39 +127,6 @@ class PlaylistController extends Controller
         return $this->jsonResponse([
             'message' => 'Playlist owner found successfully',
             'user' => $playlistOwnerUser->resource
-        ]);
-    }
-
-    public function storeHeart(Request $request)
-    {
-        $playlistId = $request->playlist_id;
-
-        $heart = $this->playlistService->heart($playlistId);
-
-        return $this->jsonResponse([
-            'message' => 'Playlist heart created successfully',
-            'heart' => $heart
-        ]);
-    }
-
-    public function destroyHeart(Request $request)
-    {
-        $playlistId = $request->playlist_id;
-
-        $this->playlistService->unheart($playlistId);
-
-        return $this->jsonResponse([
-            'message' => 'Playlist heart deleted successfully',
-        ]);
-    }
-
-    public function getPlaylistsHearts()
-    {
-        $profile = Auth::user()->profile;
-
-        return $this->jsonResponse([
-            'message' => 'Hearts found successfully',
-            'hearts' => $profile->playlistsHearts->pluck('hearteable_id'),
         ]);
     }
 
