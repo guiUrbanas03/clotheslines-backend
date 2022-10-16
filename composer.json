@@ -20,11 +20,17 @@
         "spatie/laravel-ignition": "^1.0"
     },
     "autoload": {
+        "exclude-from-classmap": [
+            "vendor/laravel/framework/src/Illuminate/Collections/Collection.php"
+        ],
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Overrides/Collections/Collection.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
